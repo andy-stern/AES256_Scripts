@@ -1,0 +1,23 @@
+
+==============================================================================
+Experiment: DiffPlaintextAvalanche (avalanche dependency matrix)
+==============================================================================
+NR = 100 matrix 4096x4096 numtrials = 50000 per-cell SE = 0.00224
+
+Overall
+-------
+Grand mean P(flip) = 0.25781
+Reachable-region mean P = 0.50000 (ideal 0.5) std = 0.00224
+Unreachable-region mean P = 0.000000 (ideal 0.0) max = 0.00000
+
+Strict avalanche criterion (reachable cells)
+--------------------------------------------
+Mean |P - 0.5| = 0.00178
+Max |P - 0.5| = 0.01254
+Chi2 versis 0.5 = 8648448.4 / dof 8650752 reduced 0.9997. P = 0.7101
+Reachable cells with |P - 0.5| > 3SE = 0.266% (expected ~0.27%)
+
+Marginals
+---------
+Per-input-bit P: min = 0.0156. Mean = 0.2578. Max = 0.5001
+Per-output-bit mean P: min = 0.0156. Mean = 0.2578. Max = 0.5001

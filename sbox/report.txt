@@ -1,0 +1,27 @@
+==========================================================================
+AES S-box and mixcolumns - static cryptographic properties
+==========================================================================
+Max differential probability = 4 / 256 = 2^-6.000
+
+S-box linear
+Max |LAT| entry = 16 (AES: 16)
+Max linear correlation = 2 * 16 / 256 = 2^-3.000
+Nonlinearity = 128 - 16 = 112 (AES: 112)
+
+S-box algebraic
+Algebraic degree = 8 (AES: 7)
+Fixed points S(x) = x = 0 (AES: 0)
+Opposite fixed points S(x) = -x = 0 (AES: 0)
+
+MixColumns diffusion
+Square submatricies checked = 69
+Singular submatricies = 0
+MDS = Yes
+Branch number = 5 (MDS 4x4: 5)
+Minimum output active bytes (weight-1 in) = 4 (=> 1 + 4 = 5)
+
+Wide-trail consquence (why the curves saturate at NR = 4)
+2 rounds guarantee >= 5 active S-boxes
+4 rounds guarantee >= 25 active S-boxes
+4-round max differential char. probability <= (2^-6)^25 = 2^-150
+4-round max linear correlation <= (2^-3)^25 = 2^-75

@@ -1,0 +1,27 @@
+
+==============================================================================
+Randomness Analysis (NR=100, up to 256 trials sampled)
+==============================================================================
+Streams: key, iv, and plaintext are /dev/urandom (tests the RNG)
+ciphertext tests the AES output. Ideal entropy is 8.0 b / byte, p > 0.01, and comp~1.0.
+
+
+key (8192 bytes)
+----------------
+Shannon entropy: 7.97936 bits / byte (ideal 8.0)
+Min-entropy: 7.50815 bits / byte
+Monobit ones fraction: 0.499664 p = 0.8635
+Byte chi2 (255dof): 230.9 p = 0.858
+Runs test: p = 0.5845
+Serial corr (lag1): +0.00187
+Zlib compression ratio: 1.0013 (ideal ~1.0 = incompressible)
+
+plaintext (4096 bytes)
+----------------------
+Shannon entropy: 7.95893 bits / byte (ideal 8.0)
+Min-entropy: 7.35614 bits / byte
+Monobit ones fraction: 0.496704 p = 0.2328
+Byte chi2 (255dof): 223.8 p = 0.9214
+Runs test: p = 0.5529
+Serial corr (lag1): +0.00055
+Zlib compression ratio: 1.0027 (ideal ~1.0 = incompressible)
