@@ -256,7 +256,6 @@ void xor(uint8_t *out, const uint8_t *a, const uint8_t *b, int n) {
     }
 }
 
-/* No padding. Caller MUST pass len that is a multiple of 16. */
 int aescbcencrypt(uint8_t **out, const uint8_t *plaintext, int len, const uint8_t *key, const uint8_t iv[16]) {
     uint8_t (*roundkeys)[4][4];
     keyexpansion(&roundkeys, key);
@@ -278,7 +277,6 @@ int aescbcencrypt(uint8_t **out, const uint8_t *plaintext, int len, const uint8_
     return len;
 }
 
-/* No unpadding. Returns the full decrypted length. */
 int aescbcdecrypt(uint8_t **out, const uint8_t *ciphertext, int len, const uint8_t *key, const uint8_t iv[16]) {
     uint8_t (*roundkeys)[4][4];
     keyexpansion(&roundkeys, key);
