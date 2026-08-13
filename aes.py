@@ -376,9 +376,9 @@ def analyze_scalar(exp, name, outdir, bits, cfrom):
                 rep.w(f"NR = {target}: {float(g.loc[g["nr"] == target, "pct"].iloc[0]):.2f}% diffusion")
 
         rep.w("Low-round rise reflects progressive diffusio. NR >= ~4 is indistinguishable from the plateau at this precision")
-        rep.close()
+    rep.close()
 
-        scalar_figures(name, outdir, bits, cfrom, g, nr, mean, std, sem, cnr, cmean, csem, plateau, df)
+    scalar_figures(name, outdir, bits, cfrom, g, nr, mean, std, sem, cnr, cmean, csem, plateau, df)
 
 def scalar_figures(name, outdir, bits, cfrom, g, nr, mean, std, sem, cnr, cmean, csem, plateau, df):
     cstd = std[nr >= cfrom]
