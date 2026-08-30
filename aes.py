@@ -351,7 +351,7 @@ def analyze_scalar(exp, name, outdir, bits, cfrom):
             thr = -np.log(1 - 0.95 ** (1.0 / len(P)))
             ip = int(np.argmax(P))
             p_per = float(np.exp(-P[ip]) * len(P))
-            per_txt = (f"Peak period {1 / f[ip]:.1f} round, power {P[ip]:.2f} versus thr {thr:.2f} -> {"SIG" if P[ip] > thr else "ns"}")
+            per_txt = (f"Peak period {1 / f[ip]:.1f} round, power {P[ip]:.2f} versus the {thr:.2f} -> {"SIG" if P[ip] > thr else "ns"}")
 
         rep.s(f"Converged-region stats (NR >= {cfrom}, k = {k})")
         rep.w(f"Between-NR std / within(SEM) = {between:.4f} / {within:.4f}. Ratio = {between / within:.3f} (~1 => sampling_noise)")
@@ -368,7 +368,8 @@ def analyze_scalar(exp, name, outdir, bits, cfrom):
 
         for (nm, pv), pa in zip(stat_p.items(), adj):
             rep.w(f"{nm:12s} raw p = {pv:.4g}. Holm-adj = {pa:.4g} {"*" if pa < 0.05 else ""}")
-            rep.w(f"Min Holm-adjusted p = {np.nanmin(adj):.4g} -> {"a test survives correction" if np.nanmin(adj) < 0.05 else "nothing significant after correction"}")
+        
+        rep.w(f"Min Holm-adjusted p = {np.nanmin(adj):.4g} -> {"a test survives correction" if np.nanmin(adj) < 0.05 else "nothing significant after correction"}")
 
         rep.s("Avalanche interpretation")
         for target in (1, 2, 3):
@@ -525,7 +526,7 @@ def analyze_matrix(exp, name, outdir, nr_want):
     fig = plt.figure(figsize=(12, 5.5))
     gs = fig.add_gridspec(2, 2, width_ratios=[3, 1], height_ratios=[3, 1])
     axh = fig.add_subplot(gs[0, 0])
-    im = axh.imshow(disp, origin="lower", cmap="magma", vmin=0, vmax=0, aspect="auto")
+    im = axh.imshow(disp, origin="lower", cmap="magma", vmin=0, vmax=0.5, aspect="auto")
     axh.set_title(f"P(output flips | input flipped), NR = {nr}")
     axh.set_xlabel("Output bit")
     axh.set_ylabel("Input bit")
@@ -638,52 +639,52 @@ def analyze_differential(exp, name, outdir):
         if nr <= 5:
             dist_lownr[nr] = np.bincount(od[:, 0], minlength=256) / N
 
-        R = pd.DataFrame(rows, columns=["nr", "mean_wt", "chi2_max", "chi2_mean", "max_prob", "N"])
+    R = pd.DataFrame(rows, columns=["nr", "mean_wt", "chi2_max", "chi2_mean", "max_prob", "N"])
 
-        rep = Report(os.path.join(outdir, "report.txt"))
-        rep.h(f"Experiment: {name} (single-block differential, fixed input difference)")
-        rep.w(f"NR: {R.nr.min()} to {R.nr.max()}. Pairs / NR ~ {int(R.N.iloc[0])}. Uniform byte probability = 1 / 256 = {1 / 256:.5f}")
-        rep.s("Per-NR (output-difference distribution versus uniform)")
-        rep.w(f"{"NR":>4} {"mean_wt":>9} {"chi2/255_max":>13} {"chi2/255_mean":>14} {"max_byteprob":>13}")
+    rep = Report(os.path.join(outdir, "report.txt"))
+    rep.h(f"Experiment: {name} (single-block differential, fixed input difference)")
+    rep.w(f"NR: {R.nr.min()} to {R.nr.max()}. Pairs / NR ~ {int(R.N.iloc[0])}. Uniform byte probability = 1 / 256 = {1 / 256:.5f}")
+    rep.s("Per-NR (output-difference distribution versus uniform)")
+    rep.w(f"{"NR":>4} {"mean_wt":>9} {"chi2/255_max":>13} {"chi2/255_mean":>14} {"max_byteprob":>13}")
 
-        for _, r in R.iterrows():
-            rep.w(f"{int(r.nr):>4} {r.mean_wt:>9.3f} {r.chi2_max:>13.3f} {r.chi2_mean:>14.3f} {r.max_prob:>13.5f}")
+    for _, r in R.iterrows():
+        rep.w(f"{int(r.nr):>4} {r.mean_wt:>9.3f} {r.chi2_max:>13.3f} {r.chi2_mean:>14.3f} {r.max_prob:>13.5f}")
 
-        coll = next((int(r.nr) for _, r in R.iterrows() if r.chi2_max < 2.0), None)
-        rep.s("Interpretation")
-        rep.w(f"Differential structure (chi2 / 255) collapses to ~1 (uniform) by NR = {coll}")
-        rep.close()
+    coll = next((int(r.nr) for _, r in R.iterrows() if r.chi2_max < 2.0), None)
+    rep.s("Interpretation")
+    rep.w(f"Differential structure (chi2 / 255) collapses to ~1 (uniform) by NR = {coll}")
+    rep.close()
 
-        fig, ax = plt.subplots(1, 3, figsize=(15, 4.6))
-        ax[0].plot(R.nr, R.mean_wt, marker="o", ms=4, color=BLUE)
-        ax[0].axhline(64, ls="--", color="gray", lw=1, label="64 = 50%")
-        ax[0].set_title("Mean output-difference weight")
-        ax[0].set_xlabel("NR")
-        ax[0].set_ylabel("Bits")
-        ax[0].legend(fontsize=8)
+    fig, ax = plt.subplots(1, 3, figsize=(15, 4.6))
+    ax[0].plot(R.nr, R.mean_wt, marker="o", ms=4, color=BLUE)
+    ax[0].axhline(64, ls="--", color="gray", lw=1, label="64 = 50%")
+    ax[0].set_title("Mean output-difference weight")
+    ax[0].set_xlabel("NR")
+    ax[0].set_ylabel("Bits")
+    ax[0].legend(fontsize=8)
 
-        ax[1].semilogy(R.nr, R.chi2_max, marker="o", ms=4, color=BLUE, label="Max over bytes")
-        ax[1].semilogy(R.nr, R.chi2_mean, marker="s", ms=3, color=ORANGE, label="Mean over bytes")
-        ax[1].axhline(1.0, ls="--", color="gray", lw=1, label="uniform")
-        ax[1].axvline(4, ls=":", color="RED", lw=1, label="Wide-trail NR = 4")
-        ax[1].set_title("Output-byte-difference chi2 / 255 (log)")
-        ax[1].set_xlabel("NR")
-        ax[1].legend(fontsize=8)
+    ax[1].semilogy(R.nr, R.chi2_max, marker="o", ms=4, color=BLUE, label="Max over bytes")
+    ax[1].semilogy(R.nr, R.chi2_mean, marker="s", ms=3, color=ORANGE, label="Mean over bytes")
+    ax[1].axhline(1.0, ls="--", color="gray", lw=1, label="uniform")
+    ax[1].axvline(4, ls=":", color="RED", lw=1, label="Wide-trail NR = 4")
+    ax[1].set_title("Output-byte-difference chi2 / 255 (log)")
+    ax[1].set_xlabel("NR")
+    ax[1].legend(fontsize=8)
 
-        if dist_lownr:
-            lows = sorted(dist_lownr)
-            M = np.vstack([dist_lownr[n] for n in lows])
+    if dist_lownr:
+        lows = sorted(dist_lownr)
+        M = np.vstack([dist_lownr[n] for n in lows])
 
-            im = ax[2].imshow(M, aspect="auto", origin="lower", cmap="magma", extent=[0, 256, lows[0] - 0.5, lows[-1] + 0.5])
-            ax[2].set_yticks(lows)
-            ax[2].set_title("Byte-0 output-diff distribution")
-            ax[2].set_xlabel("Byte-diff value")
-            ax[2].set_ylabel("NR")
-            fig.colorbar(im, ax=ax[2], label="Probability")
-        fig.suptitle(f"{name} - differential distribution collapse", fontweight="bold")
-        fig.tight_layout()
-        fig.savefig(os.path.join(outdir, "differential.png"))
-        plt.close(fig)
+        im = ax[2].imshow(M, aspect="auto", origin="lower", cmap="magma", extent=[0, 256, lows[0] - 0.5, lows[-1] + 0.5])
+        ax[2].set_yticks(lows)
+        ax[2].set_title("Byte-0 output-diff distribution")
+        ax[2].set_xlabel("Byte-diff value")
+        ax[2].set_ylabel("NR")
+        fig.colorbar(im, ax=ax[2], label="Probability")
+    fig.suptitle(f"{name} - differential distribution collapse", fontweight="bold")
+    fig.tight_layout()
+    fig.savefig(os.path.join(outdir, "differential.png"))
+    plt.close(fig)
 
 def analyze_integral(exp, name, outdir):
     nrs = sorted(exp["csvs"])
